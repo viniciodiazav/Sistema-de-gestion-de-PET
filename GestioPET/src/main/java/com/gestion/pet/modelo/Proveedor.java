@@ -6,6 +6,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+// Importamos las validaciones
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "proveedores")
@@ -16,18 +20,31 @@ public class Proveedor {
     @Column(name = "id")
     private long id;
     
+    // El nombre no puede ser nulo o vacío
+    @NotBlank(message = "El nombre no puede estar vacío")
+    @Column(name = "nombre", nullable = false)
     private String nombre;
     
-    @Column(name = "contacto")
+    // El contacto no puede ser nulo o vacío
+    @NotBlank(message = "El contacto no puede estar vacío")
+    @Column(name = "contacto", nullable = false)
     private String contacto;
 
-    @Column(name = "telefono")
+    // El teléfono debe tener entre 10 y 15 dígitos
+    @NotBlank(message = "El teléfono no puede estar vacío")
+    @Size(min = 10, max = 15, message = "El teléfono debe tener entre 10 y 15 dígitos")
+    @Column(name = "telefono", nullable = false)
     private String telefono;
 
-    @Column(name = "correo") 
+    // El correo debe ser un email válido y único
+    @NotBlank(message = "El correo no puede estar vacío")
+    @Email(message = "El formato del correo no es válido")
+    @Column(name = "correo", nullable = false, unique = true) 
     private String correo;
     
-    @Column(name = "direccion")
+    // La dirección no puede estar vacía
+    @NotBlank(message = "La dirección no puede estar vacía")
+    @Column(name = "direccion", nullable = false)
     private String direccion;
 
     public Proveedor() {
@@ -41,6 +58,8 @@ public class Proveedor {
         this.direccion = direccion;
     }
 
+    // Getters y Setters (sin cambios)
+    
     public String getNombre() {
         return nombre;
     }
@@ -84,5 +103,4 @@ public class Proveedor {
     public long getId() {
         return id;
     }
-    
 }
