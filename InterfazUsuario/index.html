@@ -35,6 +35,9 @@
                         <a data-page="inventario"><i class="fas fa-archive"></i> <span>Inventario</span></a>
                     </li>
                     <li class="sidebar-nav-li">
+                        <a data-page="materiales"><i class="fas fa-box-open"></i> <span>Materiales</span></a>
+                    </li>
+                    <li class="sidebar-nav-li">
                         <a data-page="alertas"><i class="fas fa-bell"></i> <span>Alertas</span></a>
                     </li>
                     <li class="sidebar-nav-li">
@@ -168,6 +171,46 @@
                 </section>
             </section>
 
+            <section id="materiales-page" class="page">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2>Registrar Material</h2>
+                        <p>Gestión de tipos de material PET</p>
+                    </div>
+                </div>
+
+                <section class="section-panel">
+                    <h2>Nuevo Material</h2>
+                    <form id="form-nuevo-material"> 
+                        <div class="form-group">
+                            <label for="mat-nombre">Nombre del Material:</label>
+                            <input type="text" id="mat-nombre"  required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mat-descripcion">Descripción (Opcional):</label>
+                            <textarea id="mat-descripcion" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-full-width">Registrar Material</button>
+                    </form>
+                </section>
+
+                <section class="section-panel">
+                    <h2>Materiales Registrados</h2>
+                    
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-material" placeholder="Buscar material por nombre...">
+                    </div>
+
+                    <div id="materiales-list-container">
+                        <div id="materiales-empty-state" class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <h3>No hay materiales registrados</h3>
+                            <p>Añade un nuevo material usando el formulario de arriba.</p>
+                        </div>
+                        </div>
+                </section>
+            </section>
             <section id="alertas-page" class="page">
                 <div class="page-header">
                     <div class="page-title">
@@ -234,7 +277,10 @@
                 </section>
             </section>
 
-        </main> </div> <div id="modal-nueva-entrada" class="modal-overlay hidden">
+        </main> 
+    </div> 
+    
+    <div id="modal-nueva-entrada" class="modal-overlay hidden">
         <div class="modal-content">
             <span id="modal-close-entrada" class="modal-close">&times;</span>
             <h2>Registrar Nueva Entrada</h2>
@@ -324,6 +370,7 @@
     </div>
 
     <script src="proveedores.js"></script>
+    <script src="materiales.js"></script>
     <script src="page.js"></script>
 
 </body>

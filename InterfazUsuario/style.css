@@ -524,6 +524,7 @@ table tbody tr:last-child td { border-bottom: none; }
 }
 
 /* --- 16. Formulario dentro del Modal --- */
+/* (Este estilo ahora solo aplica al modal de Proveedor y Entrada) */
 .form-panel-modal {
     display: grid;
     grid-template-columns: 1fr 1fr; /* 2 columnas */
@@ -581,6 +582,69 @@ table tbody tr:last-child td { border-bottom: none; }
     border-bottom-color: var(--danger-color);
     outline: none;
     box-shadow: none;
+}
+
+
+/* --- 16.5. Estilos para Página de Materiales (MODIFICADO) --- */
+
+/* Estilo para el <textarea> de descripción */
+/* (Aplica a CUALQUIER .form-group que contenga un textarea) */
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    background-color: var(--background-light);
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    resize: vertical; /* Permite redimensionar verticalmente */
+    min-height: 80px;
+}
+
+.form-group textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    background-color: #fff;
+}
+
+/* Contenedor de la lista de tarjetas de materiales */
+#materiales-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Separación entre tarjetas */
+}
+
+/* Tarjeta individual de material (Simplificada) */
+.material-card {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    margin: 0; 
+    display: flex;
+    align-items: center; /* Centra verticalmente el contenido */
+}
+
+.material-card-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.2rem;
+    color: var(--text-dark);
+}
+
+.material-card-info p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+/* Icono para el estado vacío de materiales */
+.empty-state i.fa-box-open {
+    color: var(--primary-color);
+    background-color: #e7f3ff;
 }
 
 
@@ -659,5 +723,12 @@ table tbody tr:last-child td { border-bottom: none; }
         font-weight: 600;
         color: var(--text-dark);
         text-align: left;
+    }
+
+    /* Responsividad para las tarjetas de material */
+    .material-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
 }
