@@ -6,6 +6,7 @@
  * - Cargar la lista de proveedores desde la API.
  * - Validar el formulario de nuevo proveedor en tiempo real.
  * - Manejar los clics en "Editar" y "Eliminar".
+ * - Filtrar proveedores por búsqueda.
  * ===================================================================
  */
 
@@ -29,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const grid = document.getElementById('grid-proveedores');
     const modalNuevoProveedor = document.getElementById('modal-nuevo-proveedor');
     const openModalBtn = document.getElementById('btn-nuevo-proveedor');
+    const searchInput = document.getElementById('search-proveedor'); // <-- Elemento de búsqueda
 
     // --- Elementos del MODAL DE NUEVO/EDITAR PROVEEDOR ---
     const formularioProvedor = document.getElementById('form-nuevo-proveedor');
@@ -71,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function mostrarProveedores() {
         grid.innerHTML = '<p>Cargando proveedores...</p>';
 
-        // --- ¡CAMBIO! Ya no se usa simulación, se usa el FETCH real ---
         fetch(`${API_URL}/produccion/proveedores`)
             .then(respuesta => {
                 if (!respuesta.ok) {
@@ -83,7 +84,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 // 1. Guardamos la lista de proveedores en nuestra variable local.
                 proveedoresCargados = proveedores || [];
 
-                // 2. Vacía el grid antes de llenarlo
+                // 2. Resetea los mensajes de "vacío" al estado original
+                emptyState.querySelector('h3').textContent = 'No hay proveedores registrados';
+                emptyState.querySelector('p').textContent = 'Añade un nuevo proveedor para empezar.';
+
+                // 3. Vacía el grid antes de llenarlo
                 grid.innerHTML = '';
 
                 if (proveedoresCargados.length > 0) {
@@ -92,7 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     gridProveedoresContainer.classList.remove('hidden');
 
                     const tarjetasHtml = proveedoresCargados.map(p => {
-                        // Se usan CLASES (class) en lugar de ID (id) para los botones
                         return `
                         <div class="proveedor-card" data-idproveedor="${p.id}">
                             <div class="proveedor-card-header">
@@ -141,8 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /**
      * --- FUNCIÓN DE VALIDACIÓN (Muestra los mensajes de error) ---
-     * Esta función se llama CADA VEZ que el usuario escribe algo.
-     * Revisa todas las condiciones y habilita/deshabilita el botón de guardar.
      */
     function validarFormulario() {
 
@@ -172,7 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
             // La condición ahora es: (Mismo nombre) Y (Diferente ID)
             p => p.nombre.toLowerCase() === nombreVal.toLowerCase() && p.id != idActual
         )) {
-            // ¡CONDICIÓN 1: Nombre no repetido (ignorando el actual)!
             nombreError.textContent = 'Este proveedor ya existe.';
             nombreError.classList.add('visible');
             nombreInput.classList.add('invalid');
@@ -196,7 +197,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // --- VALIDACIÓN DE TELÉFONO ---
-        // ¡CONDICIÓN 2: Más de 10 dígitos y que sea número!
         if (telefonoVal.length <= 9 || isNaN(telefonoVal)) {
             telefonoError.textContent = 'Debe ser un número de más de 10 dígitos.';
             telefonoError.classList.add('visible');
@@ -209,7 +209,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // --- VALIDACIÓN DE DIRECCIÓN ---
-        // ¡CONDICIÓN 3: Más de 5 caracteres!
         if (direccionVal.length <= 5) {
             direccionError.textContent = 'Debe tener más de 5 caracteres.';
             direccionError.classList.add('visible');
@@ -222,25 +221,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // --- VALIDACIÓN DE EMAIL ---
-        // ¡CONDICIÓN 4: Formato de email válido!
         if (emailVal.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
             emailError.textContent = 'El formato del email no es válido.';
             emailError.classList.add('visible');
             emailInput.classList.add('invalid');
             esEmailValido = false;
         } else {
-            // Es válido si está vacío (opcional) o si cumple el formato
             emailError.textContent = '';
             emailError.classList.remove('visible');
             emailInput.classList.remove('invalid');
-            esEmailValido = true; // (Ajusta esto si el email es 100% obligatorio)
+            esEmailValido = true;
         }
 
         // --- HABILITACIÓN DEL BOTÓN ---
-        // Comprueba que TODAS las banderas sean verdaderas.
         const esFormularioValido = esNombreValido && esContactoValido && esTelefonoValido && esEmailValido && esDireccionValida;
-
-        // ¡CONDICIÓN 5: Habilita el botón SOLO SI todo es válido!
         submitButton.disabled = !esFormularioValido;
     }
 
@@ -255,12 +249,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Al hacer clic en "+ Nuevo Proveedor"
     openModalBtn.addEventListener('click', () => {
-        // Modo "Nuevo Proveedor"
-        idInput.value = ''; // ID vacío
+        idInput.value = ''; 
         modalTitulo.textContent = 'Registrar Nuevo Proveedor';
-        formularioProvedor.reset(); // Limpia campos
+        formularioProvedor.reset(); 
         limpiarErroresFormulario();
-        submitButton.disabled = true; // Botón deshabilitado
+        submitButton.disabled = true; 
         modalNuevoProveedor.classList.remove('hidden');
     });
 
@@ -287,14 +280,12 @@ document.addEventListener("DOMContentLoaded", () => {
      * Decide si crear (POST) o actualizar (PUT).
      */
     formularioProvedor.addEventListener('submit', (e) => {
-        e.preventDefault(); // Previene la recarga
+        e.preventDefault(); 
         if (submitButton.disabled) return;
 
-        // 1. Revisa si estamos en modo Edición (si hay un ID en el input oculto)
         const idActual = idInput.value;
         const esModoEdicion = idActual !== '';
 
-        // 2. Prepara los datos
         const datosProveedor = {
             "nombre": nombreInput.value.trim(),
             "contacto": contactoInput.value.trim(),
@@ -303,33 +294,25 @@ document.addEventListener("DOMContentLoaded", () => {
             "direccion": direccionInput.value.trim()
         };
 
-        // 3. Determina la URL y el Método
         const url = esModoEdicion
             ? `${API_URL}/produccion/proveedor/${idActual}` // URL para PUT (Editar)
             : `${API_URL}/produccion/proveedor`;           // URL para POST (Nuevo)
 
         const method = esModoEdicion ? 'PUT' : 'POST';
 
-        // 4. Ejecuta el Fetch
         fetch(url, {
             method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datosProveedor),
         })
         .then(respuesta => {
             if (!respuesta.ok) {
                 throw new Error(`Error HTTP ${respuesta.status}`);
             }
-            // El PUT de tu backend (actualizar) podría no devolver JSON (es normal)
-            // El POST (crear) sí devuelve JSON
-            return respuesta.json().catch(() => null); // Maneja respuestas vacías
+            return respuesta.json().catch(() => null); 
         })
         .then(() => {
-            // Éxito
-            
-            modalNuevoProveedor.classList.add('hidden'); // Cierra el modal
+            modalNuevoProveedor.classList.add('hidden'); 
             mostrarProveedores(); // Recarga la lista de proveedores
         })
         .catch(error => {
@@ -347,11 +330,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.target.classList.contains('btn-editar')) {
             // --- INICIA LÓGICA DE EDITAR ---
             
-            // 1. Obtener el ID de la tarjeta
             const card = e.target.closest('.proveedor-card');
             const idProveedor = card.dataset.idproveedor;
 
-            // 2. Buscar el proveedor en nuestros datos locales (cargados al inicio)
             const proveedor = proveedoresCargados.find(p => p.id == idProveedor);
 
             if (!proveedor) {
@@ -359,24 +340,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // 3. Rellenar el formulario con los datos
-            idInput.value = proveedor.id; // <-- ¡IMPORTANTE!
+            idInput.value = proveedor.id; 
             nombreInput.value = proveedor.nombre;
             contactoInput.value = proveedor.contacto;
             telefonoInput.value = proveedor.telefono;
             emailInput.value = proveedor.correo;
             direccionInput.value = proveedor.direccion;
 
-            // 4. Ajustar el modal al modo "Editar"
             modalTitulo.textContent = 'Editar Proveedor';
             limpiarErroresFormulario();
-            submitButton.disabled = false; // Habilitado, los datos son válidos
+            submitButton.disabled = false; 
             modalNuevoProveedor.classList.remove('hidden');
             
             // --- FIN LÓGICA DE EDITAR ---
 
         } else if (e.target.classList.contains('btn-eliminar')) {
-            // TODO: Lógica para eliminar
+            // --- INICIA LÓGICA DE ELIMINAR ---
             nombreProveedor = e.target.parentElement.parentElement.querySelector('h3').textContent;
             id = parseInt(e.target.parentElement.parentElement.parentElement.getAttribute('data-idproveedor'));
             confirmInputDelete.parentElement.parentElement.querySelector('#delete-provider-name').textContent = nombreProveedor;
@@ -403,29 +382,84 @@ document.addEventListener("DOMContentLoaded", () => {
                         location.reload();
 
                         deleteModal.classList.add('hidden');
-                        confirmInputDelete.value = ''; // Limpia el input
-                        finalDeleteBtn.disabled = true; // Regresa al boton desactivado
+                        confirmInputDelete.value = ''; 
+                        finalDeleteBtn.disabled = true; 
 
                     })
                 } else {
                     finalDeleteBtn.disabled = true;
                 }
             });
+            // --- FIN LÓGICA DE ELIMINAR ---
         }
     });
+
     /**
      * Lógica para el modal de ELIMINAR
      */
     closeDeleteBtn.addEventListener('click', () => {
         deleteModal.classList.add('hidden');
-        confirmInputDelete.value = ''; // Limpia el input
+        confirmInputDelete.value = ''; 
     });
 
     deleteModal.addEventListener('click', (event) => {
         if (event.target === deleteModal) {
             deleteModal.classList.add('hidden');
-            confirmInputDelete.value = ''; // Limpia el input
+            confirmInputDelete.value = ''; 
         }
     });
+
+
+    // --- 5. LÓGICA DE BÚSQUEDA ---
+    searchInput.addEventListener('input', (e) => {
+        const terminoBusqueda = e.target.value.trim().toLowerCase();
+        
+        // Obtiene todas las tarjetas (las que están en el DOM)
+        const todasLasTarjetas = grid.querySelectorAll('.proveedor-card');
+        let hayResultados = false;
+
+        todasLasTarjetas.forEach(tarjeta => {
+            // Busca en el nombre, contacto, teléfono y correo
+            const nombre = tarjeta.querySelector('h3').textContent.toLowerCase();
+            const contacto = tarjeta.querySelector('.proveedorContacto').textContent.toLowerCase();
+            const telefono = tarjeta.querySelector('.proveedorTelefono').textContent.toLowerCase();
+            const correo = tarjeta.querySelector('.proveedorCorreo').textContent.toLowerCase();
+
+            // Comprueba si el término de búsqueda está en CUALQUIERA de los campos
+            const coincide = nombre.includes(terminoBusqueda) ||
+                           contacto.includes(terminoBusqueda) ||
+                           telefono.includes(terminoBusqueda) ||
+                           correo.includes(terminoBusqueda);
+
+            if (coincide) {
+                tarjeta.style.display = ''; // Muestra la tarjeta
+                hayResultados = true;
+            } else {
+                tarjeta.style.display = 'none'; // Oculta la tarjeta
+            }
+        });
+
+        // Manejo del estado "sin resultados"
+        // Si no hay resultados Y hay proveedores cargados, muestra un mensaje de "no resultados"
+        if (!hayResultados && proveedoresCargados.length > 0) {
+            emptyState.querySelector('h3').textContent = 'No se encontraron proveedores';
+            emptyState.querySelector('p').textContent = 'Intenta con un término de búsqueda diferente.';
+            emptyState.classList.remove('hidden');
+            gridProveedoresContainer.classList.add('hidden');
+        } 
+        // Si hay resultados, oculta el mensaje de "vacío"
+        else if (hayResultados) {
+            emptyState.classList.add('hidden');
+            gridProveedoresContainer.classList.remove('hidden');
+        }
+        // Si no hay resultados Y NO hay proveedores cargados, muestra el mensaje original
+        else if (!hayResultados && proveedoresCargados.length === 0) {
+            emptyState.querySelector('h3').textContent = 'No hay proveedores registrados';
+            emptyState.querySelector('p').textContent = 'Añade un nuevo proveedor para empezar.';
+            emptyState.classList.remove('hidden');
+            gridProveedoresContainer.classList.add('hidden');
+        }
+    });
+
 
 }); // Fin del DOMContentLoaded
