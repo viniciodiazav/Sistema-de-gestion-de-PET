@@ -26,8 +26,9 @@ function setupModalLogic() {
     
     // 1. Define los botones que abren modales
     const modales = [
-        { btn: 'btn-nueva-entrada', modal: 'modal-nueva-entrada', close: 'modal-close-entrada' },
-        { btn: 'btn-nuevo-proveedor', modal: 'modal-nuevo-proveedor', close: 'modal-close-proveedor' }
+        { btn: 'btn-nueva-entrada', modal: 'modal-nueva-entrada', close: 'modal-close-entrada' }
+        // La lógica del modal de proveedor se movió a proveedores.js
+        // { btn: 'btn-nuevo-proveedor', modal: 'modal-nuevo-proveedor', close: 'modal-close-proveedor' }
     ];
 
     // 2. Recorre la lista y añade los "oyentes" de clics

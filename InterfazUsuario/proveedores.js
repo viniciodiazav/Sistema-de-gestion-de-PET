@@ -28,11 +28,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const gridProveedoresContainer = document.getElementById('proveedores-grid-container');
     const grid = document.getElementById('grid-proveedores');
     const modalNuevoProveedor = document.getElementById('modal-nuevo-proveedor');
+    const openModalBtn = document.getElementById('btn-nuevo-proveedor');
 
     // --- Elementos del MODAL DE NUEVO/EDITAR PROVEEDOR ---
     const formularioProvedor = document.getElementById('form-nuevo-proveedor');
     const submitButton = formularioProvedor.querySelector('button[type="submit"]');
+    const modalTitulo = modalNuevoProveedor.querySelector('h2');
+    const closeModalBtnProveedor = document.getElementById('modal-close-proveedor');
     // Inputs
+    const idInput = document.getElementById('prov-id');
     const nombreInput = document.getElementById('prov-nombre');
     const contactoInput = document.getElementById('prov-contacto');
     const telefonoInput = document.getElementById('prov-telefono');
@@ -148,6 +152,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const telefonoVal = telefonoInput.value.trim();
         const emailVal = emailInput.value.trim();
         const direccionVal = direccionInput.value.trim();
+        const idActual = idInput.value; // Obtiene el ID (estará vacío si es "Nuevo")
+
 
         // 2. Banderas de validación. Empezamos asumiendo que todo es válido.
         let esNombreValido = true;
@@ -162,8 +168,11 @@ document.addEventListener("DOMContentLoaded", () => {
             nombreError.classList.add('visible');
             nombreInput.classList.add('invalid');
             esNombreValido = false;
-        } else if (proveedoresCargados.some(p => p.nombre.toLowerCase() === nombreVal.toLowerCase())) {
-            // ¡CONDICIÓN 1: Nombre no repetido!
+        } else if (proveedoresCargados.some(
+            // La condición ahora es: (Mismo nombre) Y (Diferente ID)
+            p => p.nombre.toLowerCase() === nombreVal.toLowerCase() && p.id != idActual
+        )) {
+            // ¡CONDICIÓN 1: Nombre no repetido (ignorando el actual)!
             nombreError.textContent = 'Este proveedor ya existe.';
             nombreError.classList.add('visible');
             nombreInput.classList.add('invalid');
@@ -238,6 +247,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- 4. "Oyentes" de Eventos (Event Listeners) ---
 
+    // Función para limpiar errores visuales
+    function limpiarErroresFormulario() {
+        formularioProvedor.querySelectorAll('.validation-message').forEach(el => el.classList.remove('visible'));
+        formularioProvedor.querySelectorAll('.form-group input').forEach(el => el.classList.remove('invalid'));
+    }
+
+    // Al hacer clic en "+ Nuevo Proveedor"
+    openModalBtn.addEventListener('click', () => {
+        // Modo "Nuevo Proveedor"
+        idInput.value = ''; // ID vacío
+        modalTitulo.textContent = 'Registrar Nuevo Proveedor';
+        formularioProvedor.reset(); // Limpia campos
+        limpiarErroresFormulario();
+        submitButton.disabled = true; // Botón deshabilitado
+        modalNuevoProveedor.classList.remove('hidden');
+    });
+
+    // Al cerrar con la 'X'
+    closeModalBtnProveedor.addEventListener('click', () => {
+        modalNuevoProveedor.classList.add('hidden');
+    });
+
+    // Al cerrar haciendo clic fuera
+    modalNuevoProveedor.addEventListener('click', (event) => {
+        if (event.target === modalNuevoProveedor) {
+            modalNuevoProveedor.classList.add('hidden');
+        }
+    });
+
     /**
      * Escucha el evento 'input' (cada vez que se teclea)
      * en CUALQUIER campo dentro del formulario.
@@ -246,51 +284,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /**
      * Maneja el envío (submit) del formulario.
-     * (Por ahora, solo previene la recarga y muestra un alert).
+     * Decide si crear (POST) o actualizar (PUT).
      */
     formularioProvedor.addEventListener('submit', (e) => {
-        e.preventDefault(); // Previene la recarga de la página
+        e.preventDefault(); // Previene la recarga
+        if (submitButton.disabled) return;
 
-        // Doble chequeo por si acaso
-        if (submitButton.disabled) {
-            alert('El formulario tiene errores, por favor corrígelos.');
-            return;
-        }
+        // 1. Revisa si estamos en modo Edición (si hay un ID en el input oculto)
+        const idActual = idInput.value;
+        const esModoEdicion = idActual !== '';
 
-        const nuevoProveedor = {
+        // 2. Prepara los datos
+        const datosProveedor = {
             "nombre": nombreInput.value.trim(),
             "contacto": contactoInput.value.trim(),
             "telefono": telefonoInput.value.trim(),
             "correo": emailInput.value.trim(),
             "direccion": direccionInput.value.trim()
-        }
+        };
 
-        fetch(`${API_URL}/produccion/proveedor`, {
-            method: 'POST',
+        // 3. Determina la URL y el Método
+        const url = esModoEdicion
+            ? `${API_URL}/produccion/proveedor/${idActual}` // URL para PUT (Editar)
+            : `${API_URL}/produccion/proveedor`;           // URL para POST (Nuevo)
+
+        const method = esModoEdicion ? 'PUT' : 'POST';
+
+        // 4. Ejecuta el Fetch
+        fetch(url, {
+            method: method,
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(nuevoProveedor),
+            body: JSON.stringify(datosProveedor),
         })
-            .then(respuesta => {
-                if (!respuesta.ok) {
-                    throw new Error(`Error HTTP ${respuesta.status}`);
-                }
-                return respuesta.json();
-            })
-            .then(() => {
-                nombreInput.value = '';
-                contactoInput.value = '';
-                telefonoInput.value = '';
-                emailInput.value = '';
-                direccionInput.value = '';
-
-                grid.innerHTML = '';
-                mostrarProveedores();
-
-                modalNuevoProveedor.classList.add('hidden');
-            })
-
+        .then(respuesta => {
+            if (!respuesta.ok) {
+                throw new Error(`Error HTTP ${respuesta.status}`);
+            }
+            // El PUT de tu backend (actualizar) podría no devolver JSON (es normal)
+            // El POST (crear) sí devuelve JSON
+            return respuesta.json().catch(() => null); // Maneja respuestas vacías
+        })
+        .then(() => {
+            // Éxito
+            
+            modalNuevoProveedor.classList.add('hidden'); // Cierra el modal
+            mostrarProveedores(); // Recarga la lista de proveedores
+        })
+        .catch(error => {
+            console.error('Error al guardar proveedor:', error);
+            alert('Hubo un error al guardar. Revisa la consola.');
+        });
     });
 
 
@@ -300,8 +345,35 @@ document.addEventListener("DOMContentLoaded", () => {
      */
     gridProveedoresContainer.addEventListener('click', e => {
         if (e.target.classList.contains('btn-editar')) {
-            console.log('Clic en EDITAR');
-            // TODO: Lógica para editar
+            // --- INICIA LÓGICA DE EDITAR ---
+            
+            // 1. Obtener el ID de la tarjeta
+            const card = e.target.closest('.proveedor-card');
+            const idProveedor = card.dataset.idproveedor;
+
+            // 2. Buscar el proveedor en nuestros datos locales (cargados al inicio)
+            const proveedor = proveedoresCargados.find(p => p.id == idProveedor);
+
+            if (!proveedor) {
+                alert('Error: No se encontró el proveedor.');
+                return;
+            }
+
+            // 3. Rellenar el formulario con los datos
+            idInput.value = proveedor.id; // <-- ¡IMPORTANTE!
+            nombreInput.value = proveedor.nombre;
+            contactoInput.value = proveedor.contacto;
+            telefonoInput.value = proveedor.telefono;
+            emailInput.value = proveedor.correo;
+            direccionInput.value = proveedor.direccion;
+
+            // 4. Ajustar el modal al modo "Editar"
+            modalTitulo.textContent = 'Editar Proveedor';
+            limpiarErroresFormulario();
+            submitButton.disabled = false; // Habilitado, los datos son válidos
+            modalNuevoProveedor.classList.remove('hidden');
+            
+            // --- FIN LÓGICA DE EDITAR ---
 
         } else if (e.target.classList.contains('btn-eliminar')) {
             // TODO: Lógica para eliminar
@@ -355,11 +427,5 @@ document.addEventListener("DOMContentLoaded", () => {
             confirmInputDelete.value = ''; // Limpia el input
         }
     });
-
-    // TODO: Añadir lógica para el botón 'finalDeleteBtn'
-
-
-    // --- FUNCIÓN DE SIMULACIÓN ELIMINADA ---
-    // (Ya no existe simularCargaAPI)
 
 }); // Fin del DOMContentLoaded
