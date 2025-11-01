@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | PET Cycle (Frontend)</title>
+
+    <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <aside class="sidebar">
+
+            <div class="sidebar-header">
+                <i class="fas fa-recycle logo-icon"></i>
+                <div class="logo-text">
+                    PET Cycle
+                    <span>Sistema de Inventario</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul id="sidebar-nav-ul">
+                    <li class="active sidebar-nav-li">
+                        <a data-page="dashboard"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+                    </li>
+                    <li class="sidebar-nav-li">
+                        <a data-page="entradas"><i class="fas fa-clipboard-list"></i> <span>Entradas</span></a>
+                    </li>
+                    <li class="sidebar-nav-li">
+                        <a data-page="inventario"><i class="fas fa-archive"></i> <span>Inventario</span></a>
+                    </li>
+                    <li class="sidebar-nav-li">
+                        <a data-page="alertas"><i class="fas fa-bell"></i> <span>Alertas</span></a>
+                    </li>
+                    <li class="sidebar-nav-li">
+                        <a data-page="proveedores"><i class="fas fa-truck"></i> <span>Proveedores</span></a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content">
+
+            <section id="dashboard-page" class="page active">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2>Dashboard</h2>
+                        <p>Gestión de inventario de materiales reciclables PET</p>
+                    </div>
+                </div>
+                <div class="dashboard-cards">
+                    <div class="card card-green">
+                        <div class="card-icon"><i class="fas fa-box"></i></div>
+                        <div class="card-info">
+                            <h3>Total Inventario</h3>
+                            <p id="metric-total-inventario">0 kg</p>
+                        </div>
+                    </div>
+                    <div class="card card-blue">
+                        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="card-info">
+                            <h3>Entradas Hoy</h3>
+                            <p id="metric-entradas-hoy">0</p>
+                        </div>
+                    </div>
+                    <div class="card card-red">
+                        <div class="card-icon"><i class="fas fa-triangle-exclamation"></i></div>
+                        <div class="card-info">
+                            <h3>Alertas Activas</h3>
+                            <p id="metric-alertas-activas">0</p>
+                        </div>
+                    </div>
+                    <div class="card card-green-light">
+                        <div class="card-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="card-info">
+                            <h3>Valor Total</h3>
+                            <p id="metric-valor-total">$0</p>
+                        </div>
+                    </div>
+                </div>
+                <section class="section-panel">
+                    <h2>Estado del Inventario por Material</h2>
+                    <div class="table-container">
+                        <table id="tabla-stock-dashboard">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Stock (kg)</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpo-tabla-stock-dashboard">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+
+            <section id="entradas-page" class="page">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2>Entradas de Material</h2>
+                        <p>Registro de material recibido</p>
+                    </div>
+                    <button id="btn-nueva-entrada" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Nueva Entrada
+                    </button>
+                </div>
+                <section class="section-panel">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Buscar por material o proveedor...">
+                    </div>
+                    <div class="table-container">
+                        <table id="tabla-entradas">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Material</th>
+                                    <th>Proveedor</th>
+                                    <th>Peso Camión</th>
+                                    <th>Peso Neto</th>
+                                    <th>Precio/kg</th>
+                                    <th>Etapa</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpo-tabla-entradas">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+
+            <section id="inventario-page" class="page">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2>Inventario Actual</h2>
+                        <p>Control de existencias por tipo de material</p>
+                    </div>
+                    <button class="btn btn-export">
+                        <i class="fas fa-download"></i> Exportar CSV
+                    </button>
+                </div>
+                <section class="section-panel">
+                    <h2>Tabla de Inventario</h2>
+                    <div class="table-container">
+                        <table id="tabla-inventario-detallado">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Cantidad Actual</th>
+                                    <th>Límite Mínimo</th>
+                                    <th>Límite Máximo</th>
+                                    <th>Nivel (%)</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpo-tabla-inventario">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+
+            <section id="alertas-page" class="page">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2>Sistema de Alertas</h2>
+                        <p>Monitoreo de niveles críticos de inventario</p>
+                    </div>
+                </div>
+                <div class="dashboard-cards alerts-cards">
+                    <div class="card card-red">
+                        <div class="card-icon"><i class="fas fa-triangle-exclamation"></i></div>
+                        <div class="card-info">
+                            <h3>Alertas Activas</h3>
+                            <p id="alert-card-activas">0</p>
+                        </div>
+                    </div>
+                    <div class="card card-yellow">
+                        <div class="card-icon"><i class="fas fa-bell"></i></div>
+                        <div class="card-info">
+                            <h3>Total Alertas</h3>
+                            <p id="alert-card-total">0</p>
+                        </div>
+                    </div>
+                    <div class="card card-green">
+                        <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="card-info">
+                            <h3>Resueltas</h3>
+                            <p id="alert-card-resueltas">0</p>
+                        </div>
+                    </div>
+                </div>
+                <section id="panel-alertas" class="section-panel">
+                    <div id="alertas-empty-state" class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>No hay alertas registradas</h3>
+                        <p>Todos los niveles de inventario están dentro de los límites normales</p>
+                    </div>
+                </section>
+            </section>
+
+            <section id="proveedores-page" class="page">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2>Proveedores</h2>
+                        <p>Gestión de proveedores de material</p>
+                    </div>
+                    <button id="btn-nuevo-proveedor" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Nuevo Proveedor
+                    </button>
+                </div>
+                <section class="section-panel">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Buscar proveedor...">
+                    </div>
+                    <div id="proveedores-empty-state" class="empty-state">
+                        <i class="fas fa-truck"></i>
+                        <h3>No hay proveedores registrados</h3>
+                        <p>Añade un nuevo proveedor para empezar</p>
+                    </div>
+                    <div id="proveedores-grid-container" class="hidden">
+                        <div id="grid-proveedores" class="proveedores-grid">
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+        </main> </div> <div id="modal-nueva-entrada" class="modal-overlay hidden">
+        <div class="modal-content">
+            <span id="modal-close-entrada" class="modal-close">&times;</span>
+            <h2>Registrar Nueva Entrada</h2>
+            <form id="form-transaccion" class="form-panel-modal">
+                <div class="form-group">
+                    <label for="material-select">Material:</label>
+                    <select id="material-select" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="origen-destino">Proveedor:</label>
+                    <input type="text" id="origen-destino" placeholder="Ej: Proveedor A" required>
+                </div>
+                <div class="form-group">
+                    <label for="peso_camion">Peso Camión (kg):</label>
+                    <input type="number" id="peso_camion" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="peso_tara">Peso Tara (kg):</label>
+                    <input type="number" id="peso_tara" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="precio_kg">Precio por kg ($):</label>
+                    <input type="number" id="precio_kg" step="0.01" min="0" required>
+                </div>
+                <input type="hidden" id="tipo" value="ENTRADA">
+                <button type="submit" class="btn btn-success btn-full-width">Registrar Entrada</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-nuevo-proveedor" class="modal-overlay hidden">
+        <div class="modal-content">
+            <span id="modal-close-proveedor" class="modal-close">&times;</span>
+            <h2>Registrar Nuevo Proveedor</h2>
+            <form id="form-nuevo-proveedor" class="form-panel-modal">
+                <div class="form-group">
+                    <label for="prov-nombre">Nombre del Proveedor:</label>
+                    <input type="text" id="prov-nombre" required>
+                    <small class="validation-message" id="error-prov-nombre"></small>
+                </div>
+                <div class="form-group">
+                    <label for="prov-contacto">Nombre de Contacto:</label>
+                    <input type="text" id="prov-contacto" required>
+                    <small class="validation-message" id="error-prov-contacto"></small>
+                </div>
+                <div class="form-group">
+                    <label for="prov-telefono">Teléfono:</label>
+                    <input type="tel" id="prov-telefono" required>
+                    <small class="validation-message" id="error-prov-telefono"></small>
+                </div>
+                <div class="form-group">
+                    <label for="prov-email">Correo:</label>
+                    <input type="email" id="prov-email" required>
+                    <small class="validation-message" id="error-prov-email"></small>
+                </div>
+                <div class="form-group">
+                    <label for="prov-direccion">Direccion:</label>
+                    <input type="text" id="prov-direccion" required>
+                    <small class="validation-message" id="error-prov-direccion"></small>
+                </div>
+                <button type="submit" class="btn btn-success btn-full-width" disabled>Guardar Proveedor</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-confirmar-delete" class="modal-overlay hidden">
+        <div class="modal-content modal-content-delete">
+            <span id="modal-close-delete" class="modal-close">&times;</span>
+            <h2>Confirmar Eliminación</h2>
+            <p>
+                Estás a punto de eliminar al proveedor: <strong id="delete-provider-name">Nombre del Proveedor</strong>.
+                Esta acción no se puede deshacer.
+            </p>
+            <p>
+                Para confirmar, por favor escribe <strong class="eliminar-input-validacion">eliminar</strong> en el campo de abajo:
+            </p>
+            <div class="form-group">
+                <input type="text" id="delete-confirm-input" autocomplete="off">
+            </div>
+            <button id="btn-final-delete" class="btn btn-danger btn-full-width btn-delete-proveedor" disabled>
+                <i class="fas fa-trash"></i> Eliminar permanentemente
+            </button>
+        </div>
+    </div>
+
+    <script src="proveedores.js"></script>
+    <script src="page.js"></script>
+
+</body>
+
+</html>
