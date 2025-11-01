@@ -185,6 +185,7 @@
                         <div class="form-group">
                             <label for="mat-nombre">Nombre del Material:</label>
                             <input type="text" id="mat-nombre"  required>
+                            <small class="validation-message" id="error-mat-nombre"></small>
                         </div>
                         <div class="form-group">
                             <label for="mat-descripcion">Descripción (Opcional):</label>
@@ -197,11 +198,6 @@
                 <section class="section-panel">
                     <h2>Materiales Registrados</h2>
                     
-                    <div class="search-bar">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="search-material" placeholder="Buscar material por nombre...">
-                    </div>
-
                     <div id="materiales-list-container">
                         <div id="materiales-empty-state" class="empty-state">
                             <i class="fas fa-box-open"></i>
@@ -368,6 +364,50 @@
             </button>
         </div>
     </div>
+
+    <div id="modal-editar-material" class="modal-overlay hidden">
+        <div class="modal-content">
+            <span id="modal-close-material" class="modal-close">&times;</span>
+            <h2>Editar Material</h2>
+            
+            <form id="form-editar-material"> 
+                <div class="form-group">
+                    <label for="edit-mat-nombre">Nombre del Material:</label>
+                    <input type="text" id="edit-mat-nombre" required>
+                    <small class="validation-message" id="error-edit-mat-nombre"></small>
+                </div>
+                <div class="form-group">
+                    <label for="edit-mat-descripcion">Descripción (Opcional):</label>
+                    <textarea id="edit-mat-descripcion" rows="3"></textarea>
+                </div>
+                
+                <input type="hidden" id="edit-mat-id">
+                
+                <button type="submit" class="btn btn-success btn-full-width">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-confirmar-delete-material" class="modal-overlay hidden">
+        <div class="modal-content modal-content-delete">
+            <span id="modal-close-delete-material" class="modal-close">&times;</span>
+            <h2>Confirmar Eliminación</h2>
+            <p>
+                Estás a punto de eliminar el material: <strong id="delete-material-name">Nombre del Material</strong>.
+                Esta acción no se puede deshacer.
+            </p>
+            <p>
+                Para confirmar, por favor escribe <strong class="eliminar-input-validacion" id="delete-material-validation-text">eliminar</strong> en el campo de abajo:
+            </p>
+            <div class="form-group">
+                <input type="text" id="delete-confirm-input-material" autocomplete="off">
+            </div>
+            <button id="btn-final-delete-material" class="btn btn-danger btn-full-width" disabled>
+                <i class="fas fa-trash"></i> Eliminar permanentemente
+            </button>
+        </div>
+    </div>
+
 
     <script src="proveedores.js"></script>
     <script src="materiales.js"></script>

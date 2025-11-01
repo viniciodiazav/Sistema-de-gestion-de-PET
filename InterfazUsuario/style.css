@@ -583,6 +583,23 @@ table tbody tr:last-child td { border-bottom: none; }
     outline: none;
     box-shadow: none;
 }
+/* --- ESTILO AÑADIDO: Input de borrado de material --- */
+#delete-confirm-input-material {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-bottom: 2px solid var(--border-color);
+    border-radius: 0;
+    box-sizing: border-box;
+    font-size: 1rem;
+    background-color: var(--background-light);
+    transition: border-color 0.2s ease;
+}
+#delete-confirm-input-material:focus {
+    border-bottom-color: var(--danger-color);
+    outline: none;
+    box-shadow: none;
+}
 
 
 /* --- 16.5. Estilos para Página de Materiales (MODIFICADO) --- */
@@ -731,4 +748,70 @@ table tbody tr:last-child td { border-bottom: none; }
         align-items: flex-start;
         gap: 10px;
     }
+}
+
+/* ============================================== */
+/* === ESTILOS ADICIONALES PARA MATERIALES === */
+/* ============================================== */
+
+/* Ajusta la tarjeta de material para que tenga un
+  header y un body, similar al de proveedor.
+  Esto SOBREESCRIBE el estilo .material-card anterior.
+*/
+.material-card {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0; /* Quitamos el padding para darlo a header/body */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    margin: 0; 
+    display: flex;
+    flex-direction: column; /* Apila header y body */
+    align-items: stretch; /* Asegura que ocupe todo el ancho */
+}
+
+/* Header para el nombre y los botones */
+.material-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px 20px 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.material-card-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text-dark);
+}
+
+/* Contenedor de botones (reutiliza estilo de proveedor) */
+.material-card-actions {
+    display: flex;
+    gap: 10px;
+    font-size: 1rem;
+}
+
+.material-card-actions i {
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+}
+.material-card-actions i:hover {
+    color: var(--primary-color);
+}
+/* --- ESTILO AÑADIDO: Hover para el icono de basura --- */
+.material-card-actions .fa-trash:hover {
+    color: var(--danger-color);
+}
+
+/* Body para la descripción */
+.material-card-body {
+    padding: 15px 20px 20px 20px;
+}
+
+.material-card-body p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-muted);
 }
